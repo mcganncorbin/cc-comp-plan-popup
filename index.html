@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Next Public Meeting Popup</title>
+  <style>
+    :root{
+      --cc-green:#2E7D32;
+      --cc-charcoal:#3A3A3A;
+      --cc-bg: rgba(255,255,255,0.96);
+    }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: transparent;
+    }
+
+    /* Modal base */
+    .cc-modal{
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      display: none; /* becomes block when open */
+    }
+    .cc-modal.is-open{ display:block; }
+
+    .cc-modal__backdrop{
+      position:absolute;
+      inset:0;
+      background: rgba(0,0,0,0.45);
+    }
+
+    .cc-modal__panel{
+      position: relative;
+      max-width: 540px;
+      margin: 10vh auto 0;
+      background: var(--cc-bg);
+      border-radius: 16px;
+      padding: 18px 18px 14px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+      border: 1px solid rgba(0,0,0,0.10);
+      color: var(--cc-charcoal);
+      overflow: hidden;
+    }
+
+    /* soft wash */
+    .cc-modal__panel::before{
+      content:"";
+      position:absolute;
+      inset:-30% -20%;
+      pointer-events:none;
+      z-index:0;
+      background:
+        radial-gradient(40% 35% at 20% 30%, rgba(158,213,169,0.35) 0%, rgba(158,213,169,0.18) 22%, transparent 64%),
+        radial-gradient(45% 38% at 85% 80%, rgba(205,233,210,0.35) 0%, rgba(205,233,210,0.18) 24%, transparent 66%);
+      filter: blur(6px);
+    }
+    .cc-modal__panel > *{ position:relative; z-index:1; }
+
+    .cc-modal__close{
+      position:absolute;
+      top:10px;
+      right:12px;
+      width:38px;
+      height:38px;
+      border-radius: 10px;
+      border: 1px solid rgba(0,0,0,0.12);
+      background:#fff;
+      font-size: 22px;
+      cursor:pointer;
+      line-height: 1;
+    }
+
+    .cc-modal__badge{
+      display:inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(46,125,50,0.12);
+      border: 1px solid rgba(46,125,50,0.25);
+      color: var(--cc-green);
+      margin-bottom: 10px;
+    }
+
+    .cc-modal__title{
+      margin: 0 0 10px;
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--cc-green);
+    }
+
+    .cc-modal__meta{
+      margin: 0 0 14px;
+      line-height: 1.55;
+      font-size: 15.5px;
+      color:#2f2f2f;
+    }
+    .cc-modal__small{ opacity: 0.9; }
+
+    .cc-modal__actions{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+
+    .cc-btn{
+      display:inline-block;
+      text-decoration:none;
+      font-weight: 900;
+      border-radius: 10px;
+      padding: 12px 12px;
+      text-align:center;
+      flex: 1 1 200px;
+    }
+    .cc-btn--primary{
+      background: var(--cc-green);
+      color:#fff;
+      border: 1px solid rgba(0,0,0,0.10);
+    }
+    .cc-btn--outline{
+      background: transparent;
+      color: var(--cc-green);
+      border: 1px solid rgba(46,125,50,0.35);
+    }
+
+    .cc-modal__footer{
+      display:flex;
+      justify-content:flex-start;
+      margin-top: 2px;
+    }
+    .cc-modal__dontshow{
+      display:flex;
+      align-items:center;
+      gap: 8px;
+      font-size: 14px;
+      color:#444;
+      user-select:none;
+    }
+
+    @media (max-width: 640px){
+      .cc-modal__panel{
+        margin: 8vh 14px 0;
+        max-width: none;
+      }
+      .cc-btn{ flex: 1 1 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="cc-meeting-modal" class="cc-modal" aria-hidden="true">
+    <div class="cc-modal__backdrop" data-cc-close="true"></div>
+
+    <div class="cc-modal__panel" role="dialog" aria-labelledby="cc-modal-title" aria-describedby="cc-modal-desc">
+      <button class="cc-modal__close" aria-label="Close" data-cc-close="true">×</button>
+
+      <div class="cc-modal__badge">Upcoming Public Meeting</div>
+      <h2 id="cc-modal-title" class="cc-modal__title">Next meeting: February 12</h2>
+
+      <p id="cc-modal-desc" class="cc-modal__meta">
+        <strong>J.C. Parks Elementary School</strong><br />
+        3505 Livingston Rd, Indian Head, 20640<br />
+        <strong>Time:</strong> 6:00 p.m. – 8:00 p.m.<br />
+        <span class="cc-modal__small"><strong>Inclement weather date:</strong> February 19</span>
+      </p>
+
+      <div class="cc-modal__actions">
+        <a class="cc-btn cc-btn--primary"
+           href="https://charles-county-comprehensive-plan-sp-d.hub.arcgis.com/pages/be404753e0e147618233695ff67650a6#all-meetings"
+           target="_top" rel="noopener">
+          View full schedule
+        </a>
+
+        <a class="cc-btn cc-btn--outline"
+           href="https://www.google.com/maps/search/?api=1&query=3505%20Livingston%20Rd,%20Indian%20Head,%20MD%2020640"
+           target="_blank" rel="noopener">
+          Directions
+        </a>
+      </div>
+
+      <div class="cc-modal__footer">
+        <label class="cc-modal__dontshow">
+          <input id="cc-modal-dontshow" type="checkbox" />
+          Do not show again
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = "cc_meeting_modal_dontshow_v1";
+
+      const modal = document.getElementById("cc-meeting-modal");
+      const dontShow = document.getElementById("cc-modal-dontshow");
+
+      function openModal() {
+        modal.classList.add("is-open");
+        modal.setAttribute("aria-hidden", "false");
+      }
+
+      function closeModal() {
+        modal.classList.remove("is-open");
+        modal.setAttribute("aria-hidden", "true");
+        if (dontShow && dontShow.checked) {
+          try { localStorage.setItem(STORAGE_KEY, "1"); } catch (e) {}
+        }
+      }
+
+      // If user opted out before, do nothing
+      let optedOut = false;
+      try { optedOut = localStorage.getItem(STORAGE_KEY) === "1"; } catch (e) {}
+
+      if (!optedOut) {
+        // slight delay so it feels intentional
+        window.setTimeout(openModal, 400);
+      }
+
+      // Close handlers
+      modal.addEventListener("click", (e) => {
+        const close = e.target && e.target.getAttribute("data-cc-close") === "true";
+        if (close) closeModal();
+      });
+
+      // ESC closes
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+      });
+    })();
+  </script>
+</body>
+</html>
